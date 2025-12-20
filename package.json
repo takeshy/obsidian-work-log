@@ -1,0 +1,29 @@
+{
+  "name": "obsidian-auto-timestamp",
+  "version": "1.0.0",
+  "description": "Automatically insert timestamp with separator",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+    "lint": "eslint main.ts",
+    "version": "node version-bump.mjs && git add manifest.json versions.json"
+  },
+  "keywords": [
+    "obsidian",
+    "obsidian-plugin",
+    "timestamp"
+  ],
+  "author": "JOINS",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^16.11.6",
+    "builtin-modules": "3.3.0",
+    "esbuild": "^0.25.2",
+    "eslint-plugin-obsidianmd": "^0.1.9",
+    "obsidian": "^1.10.0",
+    "tslib": "^2.4.0",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.18.2"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "id": "auto-timestamp",
+  "name": "Auto Timestamp",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "Automatically insert timestamp with separator",
+  "author": "takeshy",
+	"authorUrl": "https://github.com/takeshy",
+  "isDesktopOnly": false
+}
