@@ -2,20 +2,25 @@
 
 /* Tweet Modal */
 .tweet-modal {
-  padding: 20px;
+  padding: 24px;
+  position: relative;
 }
 
 .tweet-textarea {
   width: 100%;
-  min-height: 100px;
-  padding: 12px;
+  min-height: 80px;
+  max-height: 400px;
+  padding: 16px;
   border: 1px solid var(--background-modifier-border);
   border-radius: 8px;
   background-color: var(--background-primary);
   color: var(--text-normal);
-  font-size: 14px;
-  resize: vertical;
+  font-size: 15px;
+  line-height: 1.5;
+  resize: none;
+  overflow-y: auto;
   margin-bottom: 16px;
+  box-sizing: border-box;
 }
 
 .tweet-textarea:focus {
@@ -28,27 +33,103 @@
   color: var(--text-muted);
 }
 
-.tweet-buttons {
+/* Image Preview */
+.image-preview-container {
   display: flex;
-  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.image-preview-container:empty {
+  display: none;
+}
+
+.image-preview-item {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.image-preview-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--background-modifier-border);
+}
+
+.image-remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--text-error);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.image-remove-btn:hover {
+  background-color: var(--text-error-hover);
+  transform: scale(1.1);
+}
+
+/* Toolbar */
+.tweet-toolbar {
+  display: flex;
+  align-items: center;
   gap: 8px;
 }
 
-.tweet-buttons button {
+.tweet-toolbar-spacer {
+  flex: 1;
+}
+
+.tweet-image-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background-color: var(--background-secondary);
+  color: var(--text-normal);
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.15s ease;
+}
+
+.tweet-image-btn:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+.tweet-cancel-btn {
   padding: 8px 16px;
   border-radius: 6px;
   font-size: 14px;
   cursor: pointer;
 }
 
-/* Tweet Menu View */
-.tweet-menu-container {
+/* Drag and Drop */
+.tweet-modal.drag-over {
+  background-color: var(--background-secondary-alt);
+  outline: 2px dashed var(--interactive-accent);
+  outline-offset: -4px;
+}
+
+/* Empty View Buttons */
+.worklog-button-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-  height: 100%;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
 .tweet-button {
@@ -76,6 +157,16 @@
   transform: scale(0.98);
 }
 
+.tweet-button-secondary {
+  background-color: var(--background-secondary);
+  color: var(--text-normal);
+  border: 1px solid var(--background-modifier-border);
+}
+
+.tweet-button-secondary:hover {
+  background-color: var(--background-modifier-hover);
+}
+
 /* Template Preview in Settings */
 .template-preview {
   margin-top: 20px;
@@ -100,4 +191,112 @@
   font-size: 13px;
   white-space: pre-wrap;
   word-wrap: break-word;
+}
+
+/* Slash Command Autocomplete */
+.slash-autocomplete {
+  position: absolute;
+  bottom: 100%;
+  left: 24px;
+  right: 24px;
+  background-color: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+  margin-bottom: 8px;
+}
+
+.slash-autocomplete-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.slash-autocomplete-item:hover,
+.slash-autocomplete-item.active {
+  background-color: var(--background-modifier-hover);
+}
+
+.slash-autocomplete-name {
+  font-weight: 600;
+  color: var(--text-accent);
+}
+
+.slash-autocomplete-text {
+  color: var(--text-muted);
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Slash Commands Settings */
+.slash-commands-container {
+  margin-top: 12px;
+}
+
+.slash-command-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.slash-command-name {
+  width: 120px;
+  padding: 6px 10px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background-color: var(--background-primary);
+  color: var(--text-normal);
+  font-size: 14px;
+}
+
+.slash-command-text {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background-color: var(--background-primary);
+  color: var(--text-normal);
+  font-size: 14px;
+}
+
+.slash-command-delete {
+  padding: 6px 12px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background-color: var(--background-secondary);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.slash-command-delete:hover {
+  background-color: var(--text-error);
+  color: white;
+  border-color: var(--text-error);
+}
+
+.slash-command-add {
+  margin-top: 8px;
+  padding: 8px 16px;
+  border: 1px dashed var(--background-modifier-border);
+  border-radius: 4px;
+  background-color: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  width: 100%;
+}
+
+.slash-command-add:hover {
+  background-color: var(--background-modifier-hover);
+  color: var(--text-normal);
 }
