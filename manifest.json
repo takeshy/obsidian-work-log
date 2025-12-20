@@ -1,10 +1,10 @@
 {
-  "id": "auto-timestamp",
-  "name": "Auto Timestamp",
+  "id": "work-log",
+  "name": "Work Log",
   "version": "1.0.0",
   "minAppVersion": "1.0.0",
-  "description": "Automatically insert timestamp with separator",
+  "description": "Quick work log entries with customizable templates",
   "author": "takeshy",
-	"authorUrl": "https://github.com/takeshy",
+  "authorUrl": "https://github.com/takeshy",
   "isDesktopOnly": false
 }

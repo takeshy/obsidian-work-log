@@ -1,20 +1,34 @@
-# Auto Timestamp for Obsidian
+# Work Log for Obsidian
 
-A simple Obsidian plugin that inserts a timestamp with a horizontal separator.
-
-## Screenshot
-
-![Auto Timestamp](image.png)
+A simple Obsidian plugin to quickly write and save work logs with timestamps.
 
 ## Features
 
-- **Insert timestamp** - Quickly insert current date and time with a separator
-- **Customizable hotkey** - Assign your preferred keyboard shortcut
-- **Simple format** - Clean output: `(YYYY-MM-DD HH:MM)` followed by a horizontal rule
+- **Quick Entry Modal** - Press a hotkey or click the ribbon icon to open a modal for quick log entries
+- **Home View** - A dedicated view with a button to create new log entries
+- **Customizable Templates** - Configure the output format using template variables
+- **Auto File Creation** - Automatically creates the log file and folders if they don't exist
+
+## Template Variables
+
+- `{{content}}` - Your log entry text
+- `{{datetime}}` - Full date and time (YYYY-MM-DD HH:mm)
+- `{{date}}` - Date only (YYYY-MM-DD)
+- `{{time}}` - Time only (HH:mm)
+
+## Default Template
+
+```
+{{content}}
+({{datetime}})
+
+---
+```
 
 ## Output Example
 
 ```
+Fixed the login bug
 (2025-12-20 17:30)
 
 ---
@@ -23,8 +37,8 @@ A simple Obsidian plugin that inserts a timestamp with a horizontal separator.
 ## Installation
 
 ### Manual Installation
-1. Download the latest release (`main.js`, `manifest.json`)
-2. Create a folder `auto-timestamp` in your vault's `.obsidian/plugins/` directory
+1. Download the latest release (`main.js`, `manifest.json`, `styles.css`)
+2. Create a folder `work-log` in your vault's `.obsidian/plugins/` directory
 3. Copy the downloaded files into the folder
 4. Enable the plugin in Obsidian Settings > Community Plugins
 
@@ -36,20 +50,27 @@ npm install
 npm run build
 ```
 
-Copy `main.js` and `manifest.json` to your vault's plugin folder.
+Copy `main.js`, `manifest.json`, and `styles.css` to your vault's plugin folder.
 
 ## Usage
 
 ### Using the Command
 1. Open the command palette (`Ctrl/Cmd + P`)
-2. Search for "Auto Timestamp: Insert datetime with separator"
-3. Press Enter to insert the timestamp
+2. Search for "Work Log: 作業ログを書く"
+3. Enter your log and press Enter or click "投稿"
 
-### Setting a Hotkey
-1. Open Obsidian Settings (`Ctrl/Cmd + ,`)
-2. Go to "Hotkeys"
-3. Search for "Insert datetime"
-4. Click the `+` icon and press your desired key combination
+### Using the Ribbon Icon
+Click the pencil icon in the left ribbon to open the log entry modal.
+
+### Using the Home View
+1. Open the command palette (`Ctrl/Cmd + P`)
+2. Search for "Work Log: ホームを開く"
+3. Click the "作業ログを書く" button
+
+## Settings
+
+- **出力ファイル** - The file path where logs are saved (default: `作業ログ.md`)
+- **テンプレート** - Customize the log entry format using template variables
 
 ## Development
 
