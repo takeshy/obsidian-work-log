@@ -467,6 +467,12 @@ class WorkLogSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         }));
 
+    let previewContent: HTMLElement;
+    const updatePreview = () => {
+      const preview = this.plugin.processTemplate(t('sampleContent'));
+      previewContent.setText(preview);
+    };
+
     new Setting(containerEl)
       .setName(t('template'))
       .setDesc(t('templateDesc'))
@@ -477,10 +483,17 @@ class WorkLogSettingTab extends PluginSettingTab {
           .onChange(async (value) => {
             this.plugin.settings.template = value;
             await this.plugin.saveSettings();
+            updatePreview();
           });
         text.inputEl.rows = 6;
         text.inputEl.cols = 40;
       });
+
+    // プレビュー（テンプレートの直下に配置）
+    const previewContainer = containerEl.createEl('div', { cls: 'template-preview' });
+    previewContainer.createEl('h4', { text: t('preview') });
+    previewContent = previewContainer.createEl('pre');
+    updatePreview();
 
     new Setting(containerEl)
       .setName(t('imageFolder'))
@@ -514,22 +527,6 @@ class WorkLogSettingTab extends PluginSettingTab {
           this.plugin.settings.newlineKey = value as KeyOption;
           await this.plugin.saveSettings();
         }));
-
-    // プレビュー
-    const previewContainer = containerEl.createEl('div', { cls: 'template-preview' });
-    previewContainer.createEl('h4', { text: t('preview') });
-    const previewContent = previewContainer.createEl('pre');
-
-    const updatePreview = () => {
-      const preview = this.plugin.processTemplate(t('sampleContent'));
-      previewContent.setText(preview);
-    };
-
-    updatePreview();
-
-    // テンプレート変更時にプレビュー更新
-    const templateInput = containerEl.querySelector('textarea');
-    templateInput?.addEventListener('input', updatePreview);
 
     // スラッシュコマンド設定
     containerEl.createEl('h3', { text: t('slashCommands') });
