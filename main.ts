@@ -467,10 +467,12 @@ class WorkLogSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         }));
 
-    let previewContent: HTMLElement;
+    let previewContent: HTMLElement | null = null;
     const updatePreview = () => {
-      const preview = this.plugin.processTemplate(t('sampleContent'));
-      previewContent.setText(preview);
+      if (previewContent) {
+        const preview = this.plugin.processTemplate(t('sampleContent'));
+        previewContent.setText(preview);
+      }
     };
 
     new Setting(containerEl)
