@@ -665,7 +665,38 @@ export default class WorkLogPlugin extends Plugin {
     await this.saveData(this.settings);
   }
 
-  openTweetModal() {
+  async openTweetModal() {
+    // まず作業ログファイルを開く
+    const filePath = this.settings.logFilePath;
+    let file = this.app.vault.getAbstractFileByPath(filePath);
+
+    // ファイルが存在しない場合は作成
+    if (!(file instanceof TFile)) {
+      const dir = filePath.substring(0, filePath.lastIndexOf('/'));
+      if (dir && !this.app.vault.getAbstractFileByPath(dir)) {
+        await this.app.vault.createFolder(dir);
+      }
+      await this.app.vault.create(filePath, '');
+      file = this.app.vault.getAbstractFileByPath(filePath);
+    }
+
+    if (file instanceof TFile) {
+      const leaf = this.app.workspace.getLeaf();
+      await leaf.openFile(file);
+
+      // エディタの一番下までスクロール（レイアウト完了を待つ）
+      setTimeout(() => {
+        const view = leaf.view;
+        if (view && 'editor' in view) {
+          const editor = (view as unknown as { editor: { lineCount: () => number; setCursor: (line: number) => void; scrollIntoView: (range: { from: { line: number; ch: number }; to: { line: number; ch: number } }, center?: boolean) => void } }).editor;
+          const lastLine = editor.lineCount() - 1;
+          editor.setCursor(lastLine);
+          editor.scrollIntoView({ from: { line: lastLine, ch: 0 }, to: { line: lastLine, ch: 0 } }, false);
+        }
+      }, 100);
+    }
+
+    // モーダルを開く
     new TweetModal(this.app, this, (content) => this.saveLog(content)).open();
   }
 
@@ -684,7 +715,19 @@ export default class WorkLogPlugin extends Plugin {
     }
 
     if (file instanceof TFile) {
-      await this.app.workspace.getLeaf().openFile(file);
+      const leaf = this.app.workspace.getLeaf();
+      await leaf.openFile(file);
+
+      // エディタの一番下までスクロール（レイアウト完了を待つ）
+      setTimeout(() => {
+        const view = leaf.view;
+        if (view && 'editor' in view) {
+          const editor = (view as unknown as { editor: { lineCount: () => number; setCursor: (line: number) => void; scrollIntoView: (range: { from: { line: number; ch: number }; to: { line: number; ch: number } }, center?: boolean) => void } }).editor;
+          const lastLine = editor.lineCount() - 1;
+          editor.setCursor(lastLine);
+          editor.scrollIntoView({ from: { line: lastLine, ch: 0 }, to: { line: lastLine, ch: 0 } }, false);
+        }
+      }, 100);
     }
   }
 
