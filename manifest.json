@@ -3,7 +3,7 @@
   "name": "Work Log",
   "version": "1.0.0",
   "minAppVersion": "1.0.0",
-  "description": "Quick work log entries with customizable templates",
+  "description": "Quick work logging with timestamps and images",
   "author": "takeshy",
   "authorUrl": "https://github.com/takeshy",
   "isDesktopOnly": false

@@ -1,7 +1,7 @@
 {
-  "name": "obsidian-auto-timestamp",
+  "name": "obsidian-work-log",
   "version": "1.0.0",
-  "description": "Automatically insert timestamp with separator",
+  "description": "Quick work logging with timestamps and images",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
@@ -12,6 +12,7 @@
   "keywords": [
     "obsidian",
     "obsidian-plugin",
+    "work-log",
     "timestamp"
   ],
   "author": "JOINS",

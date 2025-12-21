@@ -61,7 +61,7 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     outputFile: 'Output File',
     outputFileDesc: 'File path to save logs',
     template: 'Template',
-    templateDesc: 'Available variables: {{content}}, {{datetime}}, {{date}}, {{time}}',
+    templateDesc: 'Available variables: {content}, {datetime}, {date}, {time}',
     imageFolder: 'Image Folder',
     imageFolderDesc: 'Folder path to save attached images',
     submitKey: 'Submit key',
@@ -90,7 +90,7 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     outputFile: '出力ファイル',
     outputFileDesc: 'ログを保存するファイルパス',
     template: 'テンプレート',
-    templateDesc: '使用可能な変数: {{content}}, {{datetime}}, {{date}}, {{time}}',
+    templateDesc: '使用可能な変数: {content}, {datetime}, {date}, {time}',
     imageFolder: '画像保存フォルダ',
     imageFolderDesc: '添付画像を保存するフォルダパス',
     submitKey: '送信キー',
@@ -129,7 +129,7 @@ interface WorkLogSettings {
 
 const DEFAULT_SETTINGS: WorkLogSettings = {
   logFilePath: 'work-log.md',
-  template: '{{content}}\n({{datetime}})\n\n---\n',
+  template: '{content}\n({datetime})\n\n---\n',
   imageFolder: 'attachments',
   submitKey: 'Enter',
   newlineKey: 'Shift+Enter',
@@ -718,10 +718,10 @@ export default class WorkLogPlugin extends Plugin {
   processTemplate(content: string): string {
     const now = (window as unknown as { moment: () => { format: (f: string) => string } }).moment();
     return this.settings.template
-      .replace(/\{\{content\}\}/g, content)
-      .replace(/\{\{datetime\}\}/g, now.format('YYYY-MM-DD HH:mm'))
-      .replace(/\{\{date\}\}/g, now.format('YYYY-MM-DD'))
-      .replace(/\{\{time\}\}/g, now.format('HH:mm'));
+      .replace(/\{content\}/g, content)
+      .replace(/\{datetime\}/g, now.format('YYYY-MM-DD HH:mm'))
+      .replace(/\{date\}/g, now.format('YYYY-MM-DD'))
+      .replace(/\{time\}/g, now.format('HH:mm'));
   }
 
   async saveLog(content: string) {
