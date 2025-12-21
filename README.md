@@ -11,28 +11,23 @@ A simple Obsidian plugin to quickly write and save work logs with timestamps.
 
 ## Template Variables
 
-- `{{content}}` - Your log entry text
-- `{{datetime}}` - Full date and time (YYYY-MM-DD HH:mm)
-- `{{date}}` - Date only (YYYY-MM-DD)
-- `{{time}}` - Time only (HH:mm)
+- `{content}` - Your log entry text
+- `{datetime}` - Full date and time (YYYY-MM-DD HH:mm)
+- `{date}` - Date only (YYYY-MM-DD)
+- `{time}` - Time only (HH:mm)
 
 ## Default Template
 
 ```
-{{content}}
-({{datetime}})
+{content}
+({datetime})
 
 ---
 ```
 
 ## Output Example
 
-```
-Fixed the login bug
-(2025-12-20 17:30)
-
----
-```
+![Result](result.png)
 
 ## Installation
 
@@ -44,8 +39,8 @@ Fixed the login bug
 
 ### From Source
 ```bash
-git clone https://github.com/takeshy/obsidian-auto-timestamp
-cd obsidian-auto-timestamp
+git clone https://github.com/takeshy/obsidian-work-log
+cd obsidian-work-log
 npm install
 npm run build
 ```
@@ -56,21 +51,29 @@ Copy `main.js`, `manifest.json`, and `styles.css` to your vault's plugin folder.
 
 ### Using the Command
 1. Open the command palette (`Ctrl/Cmd + P`)
-2. Search for "Work Log: 作業ログを書く"
-3. Enter your log and press Enter or click "投稿"
+2. Search for "Work Log: Write Work Log"
+3. Enter your log and press Enter or click "Post"
+
+![Input Modal](tweet.png)
 
 ### Using the Ribbon Icon
 Click the pencil icon in the left ribbon to open the log entry modal.
 
-### Using the Home View
-1. Open the command palette (`Ctrl/Cmd + P`)
-2. Search for "Work Log: ホームを開く"
-3. Click the "作業ログを書く" button
+### Using the New Tab View
+When you open a new tab, buttons for writing and opening work logs are displayed.
+
+![New Tab](new_tab.png)
 
 ## Settings
 
-- **出力ファイル** - The file path where logs are saved (default: `作業ログ.md`)
-- **テンプレート** - Customize the log entry format using template variables
+![Settings](settings.png)
+
+- **Output File** - The file path where logs are saved (default: `work-log.md`)
+- **Template** - Customize the log entry format using template variables
+- **Image Folder** - Folder path to save attached images
+- **Submit Key** - Key to submit the log (Enter, Shift+Enter, Ctrl+Enter, Alt+Enter)
+- **Newline Key** - Key to insert a new line
+- **Slash Commands** - Define text templates that can be inserted by typing /command
 
 ## Development
 
