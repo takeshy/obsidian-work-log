@@ -238,13 +238,17 @@
 
 .slash-command-item {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--background-modifier-border);
 }
 
 .slash-command-name {
-  width: 120px;
+  width: 100px;
+  min-width: 80px;
   padding: 6px 10px;
   border: 1px solid var(--background-modifier-border);
   border-radius: 4px;
@@ -255,6 +259,7 @@
 
 .slash-command-text {
   flex: 1;
+  min-width: 150px;
   padding: 6px 10px;
   border: 1px solid var(--background-modifier-border);
   border-radius: 4px;
@@ -271,6 +276,7 @@
   color: var(--text-muted);
   cursor: pointer;
   font-size: 13px;
+  margin-left: auto;
 }
 
 .slash-command-delete:hover {
