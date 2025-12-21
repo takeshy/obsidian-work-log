@@ -162,10 +162,6 @@ class TweetModal extends Modal {
     modalEl.style.width = '600px';
     modalEl.style.maxWidth = '90vw';
 
-    // オートコンプリートコンテナ
-    this.autocompleteContainer = contentEl.createEl('div', { cls: 'slash-autocomplete' });
-    this.autocompleteContainer.style.display = 'none';
-
     // テキストエリア（自動リサイズ）
     this.textarea = contentEl.createEl('textarea', {
       attr: { placeholder: t('placeholder'), rows: '3' }
@@ -175,6 +171,10 @@ class TweetModal extends Modal {
       this.autoResize();
       this.handleInputChange();
     });
+
+    // オートコンプリートコンテナ（テキストエリアの下に配置）
+    this.autocompleteContainer = contentEl.createEl('div', { cls: 'slash-autocomplete' });
+    this.autocompleteContainer.style.display = 'none';
 
     // 画像プレビューエリア
     this.imagePreviewContainer = contentEl.createEl('div', { cls: 'image-preview-container' });

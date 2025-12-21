@@ -195,18 +195,13 @@
 
 /* Slash Command Autocomplete */
 .slash-autocomplete {
-  position: absolute;
-  bottom: 100%;
-  left: 24px;
-  right: 24px;
   background-color: var(--background-primary);
   border: 1px solid var(--background-modifier-border);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   max-height: 200px;
   overflow-y: auto;
-  z-index: 100;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 
 .slash-autocomplete-item {
