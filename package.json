@@ -1,6 +1,6 @@
 {
   "name": "obsidian-work-log",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Quick work logging with timestamps and images",
   "main": "main.js",
   "scripts": {

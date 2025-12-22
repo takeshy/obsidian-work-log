@@ -6,7 +6,8 @@ import {
   Notice,
   App,
   PluginSettingTab,
-  Setting
+  Setting,
+  MarkdownView
 } from 'obsidian';
 
 // i18n
@@ -681,8 +682,24 @@ export default class WorkLogPlugin extends Plugin {
     }
 
     if (file instanceof TFile) {
-      const leaf = this.app.workspace.getLeaf();
-      await leaf.openFile(file);
+      // すでに作業ログファイルが開かれているリーフを検索
+      let existingLeaf: ReturnType<typeof this.app.workspace.getLeaf> | null = null;
+      this.app.workspace.iterateAllLeaves((leaf) => {
+        if (leaf.view instanceof MarkdownView && leaf.view.file?.path === filePath) {
+          existingLeaf = leaf;
+        }
+      });
+
+      let leaf: ReturnType<typeof this.app.workspace.getLeaf>;
+      if (existingLeaf) {
+        // 既存のリーフをアクティブにする
+        leaf = existingLeaf;
+        this.app.workspace.setActiveLeaf(leaf, { focus: true });
+      } else {
+        // 新しくファイルを開く
+        leaf = this.app.workspace.getLeaf();
+        await leaf.openFile(file);
+      }
 
       // エディタの一番下までスクロール（レイアウト完了を待つ）
       setTimeout(() => {
@@ -715,8 +732,24 @@ export default class WorkLogPlugin extends Plugin {
     }
 
     if (file instanceof TFile) {
-      const leaf = this.app.workspace.getLeaf();
-      await leaf.openFile(file);
+      // すでに作業ログファイルが開かれているリーフを検索
+      let existingLeaf: ReturnType<typeof this.app.workspace.getLeaf> | null = null;
+      this.app.workspace.iterateAllLeaves((leaf) => {
+        if (leaf.view instanceof MarkdownView && leaf.view.file?.path === filePath) {
+          existingLeaf = leaf;
+        }
+      });
+
+      let leaf: ReturnType<typeof this.app.workspace.getLeaf>;
+      if (existingLeaf) {
+        // 既存のリーフをアクティブにする
+        leaf = existingLeaf;
+        this.app.workspace.setActiveLeaf(leaf, { focus: true });
+      } else {
+        // 新しくファイルを開く
+        leaf = this.app.workspace.getLeaf();
+        await leaf.openFile(file);
+      }
 
       // エディタの一番下までスクロール（レイアウト完了を待つ）
       setTimeout(() => {
