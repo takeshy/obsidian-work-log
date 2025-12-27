@@ -807,7 +807,27 @@ export default class WorkLogPlugin extends Plugin {
 
     if (file instanceof TFile) {
       const currentContent = await this.app.vault.read(file);
-      await this.app.vault.modify(file, currentContent + logEntry);
+
+      // 空白行を除いた最後の行を取得
+      const lines = currentContent.split('\n');
+      let lastNonEmptyLine = '';
+      for (let i = lines.length - 1; i >= 0; i--) {
+        if (lines[i].trim() !== '') {
+          lastNonEmptyLine = lines[i].trim();
+          break;
+        }
+      }
+
+      let prefix = '';
+      if (lastNonEmptyLine === '---') {
+        // カーソル位置が---の末尾の場合は改行してから書き込む
+        prefix = currentContent.endsWith('\n') ? '' : '\n';
+      } else if (lastNonEmptyLine !== '') {
+        // 前回の書き込みが---以外の場合は空行をあけて---を書き込む
+        prefix = '\n\n---\n';
+      }
+
+      await this.app.vault.modify(file, currentContent + prefix + logEntry);
     } else {
       // フォルダが必要なら作成
       const dir = filePath.substring(0, filePath.lastIndexOf('/'));
