@@ -38,7 +38,15 @@ type TranslationKey =
   | 'commandName'
   | 'commandText'
   | 'addCommand'
-  | 'deleteCommand';
+  | 'deleteCommand'
+  | 'logProfiles'
+  | 'logProfilesDesc'
+  | 'profileName'
+  | 'profileCommand'
+  | 'profileFilePath'
+  | 'addProfile'
+  | 'deleteProfile'
+  | 'writeToProfile';
 
 type KeyOption = 'Enter' | 'Shift+Enter' | 'Ctrl+Enter' | 'Alt+Enter';
 
@@ -46,6 +54,13 @@ interface SlashCommand {
   id: string;
   name: string;
   text: string;
+}
+
+interface LogProfile {
+  id: string;
+  name: string;
+  command: string;
+  filePath: string;
 }
 
 const translations: Record<string, Record<TranslationKey, string>> = {
@@ -60,7 +75,7 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     imageSaveFailed: 'Failed to save image',
     settingsTitle: 'Work Log Settings',
     outputFile: 'Output File',
-    outputFileDesc: 'File path to save logs',
+    outputFileDesc: 'File path to save logs (default)',
     template: 'Template',
     templateDesc: 'Available variables: {content}, {datetime}, {date}, {time}',
     imageFolder: 'Image Folder',
@@ -77,6 +92,14 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     commandText: 'Text to insert',
     addCommand: 'Add command',
     deleteCommand: 'Delete',
+    logProfiles: 'Log Profiles',
+    logProfilesDesc: 'Define multiple log destinations with their own slash commands',
+    profileName: 'Profile name',
+    profileCommand: 'Slash command',
+    profileFilePath: 'File path',
+    addProfile: 'Add profile',
+    deleteProfile: 'Delete',
+    writeToProfile: 'Write to {name}',
   },
   ja: {
     writeWorkLog: '作業ログを書く',
@@ -89,7 +112,7 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     imageSaveFailed: '画像の保存に失敗しました',
     settingsTitle: '作業ログ設定',
     outputFile: '出力ファイル',
-    outputFileDesc: 'ログを保存するファイルパス',
+    outputFileDesc: 'ログを保存するファイルパス（デフォルト）',
     template: 'テンプレート',
     templateDesc: '使用可能な変数: {content}, {datetime}, {date}, {time}',
     imageFolder: '画像保存フォルダ',
@@ -106,6 +129,14 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     commandText: '挿入するテキスト',
     addCommand: 'コマンドを追加',
     deleteCommand: '削除',
+    logProfiles: 'ログプロファイル',
+    logProfilesDesc: '複数のログ出力先を登録し、それぞれにスラッシュコマンドを割り当てます',
+    profileName: 'プロファイル名',
+    profileCommand: 'スラッシュコマンド',
+    profileFilePath: 'ファイルパス',
+    addProfile: 'プロファイルを追加',
+    deleteProfile: '削除',
+    writeToProfile: '{name}に書く',
   },
 };
 
@@ -126,6 +157,7 @@ interface WorkLogSettings {
   submitKey: KeyOption;
   newlineKey: KeyOption;
   slashCommands: SlashCommand[];
+  logProfiles: LogProfile[];
 }
 
 const DEFAULT_SETTINGS: WorkLogSettings = {
@@ -134,7 +166,8 @@ const DEFAULT_SETTINGS: WorkLogSettings = {
   imageFolder: 'attachments',
   submitKey: 'Enter',
   newlineKey: 'Shift+Enter',
-  slashCommands: []
+  slashCommands: [],
+  logProfiles: []
 };
 
 const KEY_OPTIONS: KeyOption[] = ['Enter', 'Shift+Enter', 'Ctrl+Enter', 'Alt+Enter'];
@@ -531,12 +564,80 @@ class WorkLogSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         }));
 
+    // ログプロファイル設定
+    containerEl.createEl('h3', { text: t('logProfiles') });
+    containerEl.createEl('p', { text: t('logProfilesDesc'), cls: 'setting-item-description' });
+
+    const profilesContainer = containerEl.createEl('div', { cls: 'log-profiles-container' });
+    this.renderLogProfiles(profilesContainer);
+
     // スラッシュコマンド設定
     containerEl.createEl('h3', { text: t('slashCommands') });
     containerEl.createEl('p', { text: t('slashCommandsDesc'), cls: 'setting-item-description' });
 
     const commandsContainer = containerEl.createEl('div', { cls: 'slash-commands-container' });
     this.renderSlashCommands(commandsContainer);
+  }
+
+  renderLogProfiles(container: HTMLElement) {
+    container.empty();
+
+    this.plugin.settings.logProfiles.forEach((profile, index) => {
+      const profileEl = container.createEl('div', { cls: 'log-profile-item' });
+
+      const nameInput = profileEl.createEl('input', {
+        attr: { type: 'text', placeholder: t('profileName') },
+        cls: 'log-profile-name'
+      });
+      nameInput.value = profile.name;
+      nameInput.onchange = async () => {
+        this.plugin.settings.logProfiles[index].name = nameInput.value;
+        await this.plugin.saveSettings();
+        this.plugin.registerProfileCommands();
+      };
+
+      const commandInput = profileEl.createEl('input', {
+        attr: { type: 'text', placeholder: t('profileCommand') },
+        cls: 'log-profile-command'
+      });
+      commandInput.value = profile.command;
+      commandInput.onchange = async () => {
+        this.plugin.settings.logProfiles[index].command = commandInput.value;
+        await this.plugin.saveSettings();
+        this.plugin.registerProfileCommands();
+      };
+
+      const filePathInput = profileEl.createEl('input', {
+        attr: { type: 'text', placeholder: t('profileFilePath') },
+        cls: 'log-profile-filepath'
+      });
+      filePathInput.value = profile.filePath;
+      filePathInput.onchange = async () => {
+        this.plugin.settings.logProfiles[index].filePath = filePathInput.value;
+        await this.plugin.saveSettings();
+      };
+
+      const deleteBtn = profileEl.createEl('button', { text: t('deleteProfile'), cls: 'log-profile-delete' });
+      deleteBtn.onclick = async () => {
+        this.plugin.settings.logProfiles.splice(index, 1);
+        await this.plugin.saveSettings();
+        this.plugin.registerProfileCommands();
+        this.renderLogProfiles(container);
+      };
+    });
+
+    // 追加ボタン
+    const addBtn = container.createEl('button', { text: t('addProfile'), cls: 'log-profile-add' });
+    addBtn.onclick = async () => {
+      this.plugin.settings.logProfiles.push({
+        id: Date.now().toString(),
+        name: '',
+        command: '',
+        filePath: ''
+      });
+      await this.plugin.saveSettings();
+      this.renderLogProfiles(container);
+    };
   }
 
   renderSlashCommands(container: HTMLElement) {
@@ -589,6 +690,7 @@ class WorkLogSettingTab extends PluginSettingTab {
 
 export default class WorkLogPlugin extends Plugin {
   settings!: WorkLogSettings;
+  private profileCommandIds: string[] = [];
 
   async onload() {
     await this.loadSettings();
@@ -611,9 +713,37 @@ export default class WorkLogPlugin extends Plugin {
       callback: () => this.openTweetModal(),
     });
 
+    // プロファイルコマンドを登録
+    this.registerProfileCommands();
+
     this.addRibbonIcon('pencil', t('writeWorkLog'), () => this.openTweetModal());
 
     this.addSettingTab(new WorkLogSettingTab(this.app, this));
+  }
+
+  registerProfileCommands() {
+    // 既存のプロファイルコマンドを削除
+    this.profileCommandIds.forEach(id => {
+      // @ts-expect-error - Obsidian APIの内部メソッド
+      this.app.commands.removeCommand(`${this.manifest.id}:${id}`);
+    });
+    this.profileCommandIds = [];
+
+    // 各プロファイルに対してコマンドを登録
+    this.settings.logProfiles.forEach(profile => {
+      if (profile.command && profile.name) {
+        const commandId = `profile-${profile.id}`;
+        const commandName = t('writeToProfile').replace('{name}', profile.name);
+
+        this.addCommand({
+          id: commandId,
+          name: commandName,
+          callback: () => this.openTweetModalForProfile(profile),
+        });
+
+        this.profileCommandIds.push(commandId);
+      }
+    });
   }
 
   addButtonToEmptyViews() {
@@ -667,8 +797,17 @@ export default class WorkLogPlugin extends Plugin {
   }
 
   async openTweetModal() {
+    // デフォルトの作業ログファイルに書き込む
+    await this.openTweetModalWithFilePath(this.settings.logFilePath);
+  }
+
+  async openTweetModalForProfile(profile: LogProfile) {
+    // プロファイルの作業ログファイルに書き込む
+    await this.openTweetModalWithFilePath(profile.filePath);
+  }
+
+  async openTweetModalWithFilePath(filePath: string) {
     // まず作業ログファイルを開く
-    const filePath = this.settings.logFilePath;
     let file = this.app.vault.getAbstractFileByPath(filePath);
 
     // ファイルが存在しない場合は作成
@@ -714,7 +853,7 @@ export default class WorkLogPlugin extends Plugin {
     }
 
     // モーダルを開く
-    new TweetModal(this.app, this, (content) => this.saveLog(content)).open();
+    new TweetModal(this.app, this, (content) => this.saveLogToFile(content, filePath)).open();
   }
 
   async openWorkLog() {
@@ -800,8 +939,11 @@ export default class WorkLogPlugin extends Plugin {
   }
 
   async saveLog(content: string) {
+    await this.saveLogToFile(content, this.settings.logFilePath);
+  }
+
+  async saveLogToFile(content: string, filePath: string) {
     const logEntry = this.processTemplate(content);
-    const filePath = this.settings.logFilePath;
 
     const file = this.app.vault.getAbstractFileByPath(filePath);
 
