@@ -1,7 +1,7 @@
 {
   "id": "work-log",
   "name": "Work Log",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "minAppVersion": "1.0.0",
   "description": "Quick work logging with timestamps and images",
   "author": "takeshy",
