@@ -13,6 +13,8 @@ import {
 // i18n
 type TranslationKey =
   | 'writeWorkLog'
+  | 'writeFromClipboard'
+  | 'clipboardEmpty'
   | 'openWorkLog'
   | 'placeholder'
   | 'addImage'
@@ -51,6 +53,8 @@ interface SlashCommand {
 const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
     writeWorkLog: 'Write Work Log',
+    writeFromClipboard: 'Write from Clipboard',
+    clipboardEmpty: 'Clipboard is empty',
     openWorkLog: 'Open Work Log',
     placeholder: "What's happening?",
     addImage: 'Add Image',
@@ -80,6 +84,8 @@ const translations: Record<string, Record<TranslationKey, string>> = {
   },
   ja: {
     writeWorkLog: '作業ログを書く',
+    writeFromClipboard: 'クリップボードから書き込む',
+    clipboardEmpty: 'クリップボードが空です',
     openWorkLog: '作業ログを開く',
     placeholder: '今何してる？',
     addImage: '画像を追加',
@@ -590,6 +596,17 @@ class WorkLogSettingTab extends PluginSettingTab {
 export default class WorkLogPlugin extends Plugin {
   settings!: WorkLogSettings;
 
+  async ensureFolder(folderPath: string) {
+    if (!folderPath) return;
+    if (!this.app.vault.getAbstractFileByPath(folderPath)) {
+      try {
+        await this.app.vault.createFolder(folderPath);
+      } catch {
+        // Folder already exists (race condition) - ignore
+      }
+    }
+  }
+
   async onload() {
     await this.loadSettings();
 
@@ -609,6 +626,12 @@ export default class WorkLogPlugin extends Plugin {
       id: 'open-tweet-modal',
       name: t('writeWorkLog'),
       callback: () => this.openTweetModal(),
+    });
+
+    this.addCommand({
+      id: 'write-from-clipboard',
+      name: t('writeFromClipboard'),
+      callback: () => this.writeFromClipboard(),
     });
 
     this.addRibbonIcon('pencil', t('writeWorkLog'), () => this.openTweetModal());
@@ -674,9 +697,7 @@ export default class WorkLogPlugin extends Plugin {
     // ファイルが存在しない場合は作成
     if (!(file instanceof TFile)) {
       const dir = filePath.substring(0, filePath.lastIndexOf('/'));
-      if (dir && !this.app.vault.getAbstractFileByPath(dir)) {
-        await this.app.vault.createFolder(dir);
-      }
+      await this.ensureFolder(dir);
       await this.app.vault.create(filePath, '');
       file = this.app.vault.getAbstractFileByPath(filePath);
     }
@@ -724,9 +745,7 @@ export default class WorkLogPlugin extends Plugin {
     // ファイルが存在しない場合は作成
     if (!(file instanceof TFile)) {
       const dir = filePath.substring(0, filePath.lastIndexOf('/'));
-      if (dir && !this.app.vault.getAbstractFileByPath(dir)) {
-        await this.app.vault.createFolder(dir);
-      }
+      await this.ensureFolder(dir);
       await this.app.vault.create(filePath, '');
       file = this.app.vault.getAbstractFileByPath(filePath);
     }
@@ -764,6 +783,20 @@ export default class WorkLogPlugin extends Plugin {
     }
   }
 
+  async writeFromClipboard() {
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      if (!clipboardText || clipboardText.trim() === '') {
+        new Notice(t('clipboardEmpty'));
+        return;
+      }
+      await this.saveLog(clipboardText.trim());
+    } catch (error) {
+      console.error('Failed to read clipboard:', error);
+      new Notice(t('clipboardEmpty'));
+    }
+  }
+
   async saveImage(file: File): Promise<string | null> {
     try {
       const now = (window as unknown as { moment: () => { format: (f: string) => string } }).moment();
@@ -773,9 +806,7 @@ export default class WorkLogPlugin extends Plugin {
       const folderPath = this.settings.imageFolder;
 
       // フォルダが存在しなければ作成
-      if (!this.app.vault.getAbstractFileByPath(folderPath)) {
-        await this.app.vault.createFolder(folderPath);
-      }
+      await this.ensureFolder(folderPath);
 
       const filePath = `${folderPath}/${fileName}`;
       const arrayBuffer = await file.arrayBuffer();
@@ -831,9 +862,7 @@ export default class WorkLogPlugin extends Plugin {
     } else {
       // フォルダが必要なら作成
       const dir = filePath.substring(0, filePath.lastIndexOf('/'));
-      if (dir && !this.app.vault.getAbstractFileByPath(dir)) {
-        await this.app.vault.createFolder(dir);
-      }
+      await this.ensureFolder(dir);
       await this.app.vault.create(filePath, logEntry);
     }
 
